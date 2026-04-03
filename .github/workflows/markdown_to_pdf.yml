@@ -5,13 +5,13 @@ on:
     types: [published]
 
 permissions:
-  contents: write    # 授予写入 Release 附件的权限
+  contents: write
 
 jobs:
   convert:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout target repository (current repo)
+      - name: Checkout target repository
         uses: actions/checkout@v4
         with:
           path: target_repo
@@ -32,6 +32,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install markdown beautifulsoup4 playwright pymdown-extensions python-markdown-math markdown-checklist
           playwright install chromium
+
+      - name: Install Sarasa Fixed SC font
+        run: |
+          # 下载 Sarasa 字体包（包含 Sarasa Fixed SC）
+          wget https://github.com/be5invis/Sarasa-Gothic/releases/download/v1.0.20/Sarasa-TTF-1.0.20.7z
+          sudo apt-get install -y p7zip-full
+          7z x Sarasa-TTF-1.0.20.7z -o./sarasa
+          # 安装所有 Sarasa 字体（或只安装 SarasaFixedSC-*）
+          sudo mkdir -p /usr/share/fonts/truetype/sarasa
+          sudo cp ./sarasa/SarasaFixedSC-*.ttf /usr/share/fonts/truetype/sarasa/
+          # 刷新字体缓存
+          sudo fc-cache -fv
+          # 验证字体是否安装成功
+          fc-list | grep "Sarasa Fixed SC"
 
       - name: Prepare output directory
         run: mkdir -p ./output
