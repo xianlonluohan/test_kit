@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install markdown beautifulsoup4 playwright pymdown-extensions mdx-math markdown-checklist
+          pip install markdown beautifulsoup4 playwright pymdown-extensions python-markdown-math markdown-checklist
           playwright install chromium
 
       - name: Prepare output directory
