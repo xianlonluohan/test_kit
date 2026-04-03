@@ -25,7 +25,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
@@ -35,12 +35,13 @@ jobs:
 
       - name: Install Sarasa Fixed SC font
         run: |
-          wget https://github.com/be5invis/Sarasa-Gothic/releases/download/v1.0.20/Sarasa-TTF-1.0.20.7z
+          sudo apt-get update
           sudo apt-get install -y p7zip-full
-          7z x Sarasa-TTF-1.0.20.7z -o./sarasa
-          sudo mkdir -p /usr/share/fonts/truetype/sarasa
-          sudo cp ./sarasa/SarasaFixedSC-*.ttf /usr/share/fonts/truetype/sarasa/
-          sudo fc-cache -fv
+          wget https://github.com/be5invis/Sarasa-Gothic/releases/download/v1.0.37/SarasaFixedSC-TTF-Unhinted-1.0.37.7z
+          7z x SarasaFixedSC-TTF-Unhinted-1.0.37.7z -o./sarasa
+          mkdir -p ~/.local/share/fonts/sarasa
+          cp ./sarasa/SarasaFixedSC-*.ttf ~/.local/share/fonts/sarasa/
+          fc-cache -fv
 
       - name: Prepare output directory
         run: mkdir -p ./output
@@ -48,7 +49,7 @@ jobs:
       - name: Get repository name and release tag
         id: vars
         run: |
-          REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
+          REPO_NAME="${{ github.event.repository.name }}"
           TAG_NAME="${{ github.event.release.tag_name }}"
           ZIP_NAME="${REPO_NAME}-${TAG_NAME}"
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_OUTPUT
@@ -56,7 +57,7 @@ jobs:
 
       - name: Run conversion script
         run: |
-          python script_repo/test_markdown2_3.py \
+          python script_repo/emakefun_markdown_to_pdf.py \
             --input target_repo \
             --output ./output \
             --watermark "emakefun" \
