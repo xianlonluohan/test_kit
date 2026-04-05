@@ -11,29 +11,26 @@ jobs:
   convert:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout target repository
+      - name: Checkout target repository (the one being released)
         uses: actions/checkout@v4
         with:
           path: target_repo
-
-      - name: Checkout script repository
-        uses: actions/checkout@v4
-        with:
-          repository: xianlonluohan/my_markdown_to_pdf
-          path: script_repo
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Install emakefun_markdown_to_pdf tool
         run: |
           python -m pip install --upgrade pip
-          pip install markdown beautifulsoup4 playwright pymdown-extensions python-markdown-math markdown-checklist pygments
+          pip install git+https://github.com/xianlonluohan/my_markdown_to_pdf.git
+
+      - name: Install Playwright browser (required)
+        run: |
           playwright install chromium
 
-      - name: Install Sarasa Fixed SC font
+      - name: Install Sarasa Fixed SC font 
         run: |
           sudo apt-get update
           sudo apt-get install -y p7zip-full
@@ -55,9 +52,9 @@ jobs:
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_OUTPUT
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
 
-      - name: Run conversion script
+      - name: Run conversion using installed command
         run: |
-          python script_repo/emakefun_markdown_to_pdf.py \
+          emakefun_markdown_to_pdf \
             --input target_repo \
             --output ./output \
             --watermark "emakefun" \
